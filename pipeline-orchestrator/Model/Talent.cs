@@ -44,6 +44,7 @@ namespace pipeline_orchestrator.Model
         [Required]
         public List<String> Languages { get; set; } = new List<string>();
         public List<URL>? AdditionalURL { get; set; } = new List<URL>();    
+        public List<Certifications> Certifications { get; set; } = new List<Certifications>();
 
     }
 }
