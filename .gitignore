@@ -1,0 +1,39 @@
+# Visual Studio
+.vs/
+.vscode/
+
+# Build results
+bin/
+obj/
+out/
+
+# User-specific files
+*.user
+*.rsuser
+*.suo
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Visual Studio Code settings (optional)
+.vscode/*
+
+# NuGet
+packages/
+*.nupkg
+
+# Docker
+docker-compose.override.yml
+
+# Rider
+.idea/
+
+# Test results
+TestResults/
+
+# Publish output
+publish/
