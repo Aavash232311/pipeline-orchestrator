@@ -1,5 +1,6 @@
 using pipeline_orchestrator.Data;
 using Microsoft.EntityFrameworkCore;
+using pipeline_orchestrator.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 
 builder.AddServiceDefaults();
+
+builder.Services.AddSingleton<Microservice>();
 
 // Add services to the container.
 
