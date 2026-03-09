@@ -4,6 +4,7 @@ namespace pipeline_orchestrator.Model
 {
     public class Talent
     {
+        public Guid Id { get; set; } = Guid.NewGuid();
         [MaxLength(150)]
         [Required]
         public string Name { get; set; } = string.Empty;
@@ -44,7 +45,7 @@ namespace pipeline_orchestrator.Model
         [Required]
         public List<String> Languages { get; set; } = new List<string>();
         public List<URL>? AdditionalURL { get; set; } = new List<URL>();    
-        public List<Certifications> Certifications { get; set; } = new List<Certifications>();
+        public List<Certifications>? Certifications { get; set; } = new List<Certifications>();
 
     }
 }

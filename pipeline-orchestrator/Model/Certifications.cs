@@ -4,6 +4,7 @@ namespace pipeline_orchestrator.Model
 {
     public class Certifications
     {
+        public Guid Id { get; set; } = Guid.NewGuid();
         [MaxLength(250)]
         public string? CertificationName { get; set; } = string.Empty;
         [MaxLength(250)]

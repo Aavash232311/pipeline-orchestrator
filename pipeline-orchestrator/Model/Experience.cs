@@ -4,6 +4,7 @@ namespace pipeline_orchestrator.Model
 {
     public class Experience
     {
+        public Guid Id { get; set; } = Guid.NewGuid();
         [Required]
         [MaxLength(255)]
         public string Title { get; set; } = string.Empty;
