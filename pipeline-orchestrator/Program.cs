@@ -1,4 +1,4 @@
-using pipeline_orchestrator.Data;
+﻿using pipeline_orchestrator.Data;
 using Microsoft.EntityFrameworkCore;
 using pipeline_orchestrator.Services;
 
@@ -13,8 +13,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.AddServiceDefaults();
 
+/* Dependency Injections 💉 */ 
 builder.Services.AddSingleton<Microservice>();
-
+builder.Services.AddHttpClient<REST>(); 
 // Add services to the container.
 
 builder.Services.AddControllers();

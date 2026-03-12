@@ -7,5 +7,6 @@ public class ApplicationDbContext : DbContext
     public ApplicationDbContext(DbContextOptions options) : base(options)
     {}
     public DbSet<Talent> talent { get; set; } 
+    public DbSet<Listing> listing { get; set; }
 }
 

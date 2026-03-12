@@ -26,11 +26,6 @@ namespace pipeline_orchestrator.Model
         [MaxLength(150)]
         [Required(ErrorMessage = "City is required")]
         public string City { get; set; } = string.Empty;
-
-        [Url(ErrorMessage = "Invalid URL format")]
-        [MaxLength(2500)]
-        public string? LinkedInUrl { get; set; } = string.Empty;
-
         [Url(ErrorMessage = "Invalid URL format")]
         [MaxLength(2500)]
         public string? GitHubUrl { get; set; } = string.Empty;
@@ -46,6 +41,5 @@ namespace pipeline_orchestrator.Model
         public List<String> Languages { get; set; } = new List<string>();
         public List<URL>? AdditionalURL { get; set; } = new List<URL>();    
         public List<Certifications>? Certifications { get; set; } = new List<Certifications>();
-
     }
 }
