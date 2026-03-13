@@ -25,6 +25,7 @@ public class StreamController : ControllerBase
     public async Task<IActionResult> GetStream()
     {
         var result = await _rest.RepositoryInfo("Aavash232311", "transformer-pt-analysis");
+        // here we need to draw meaningful conclusion from minimum resources possible
         return new JsonResult(Ok(result));
     }
 }
