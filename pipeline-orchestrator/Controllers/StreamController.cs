@@ -20,12 +20,15 @@ public class StreamController : ControllerBase
         _httpClient.DefaultRequestHeaders.Add("Accept", "application/vnd.github+json");
     }
 
+    /* 
+        Making things happen in series of pipelines. 
+    */
+
     [HttpGet]
     [Route("get-stream")]
     public async Task<IActionResult> GetStream()
     {
-        var result = await _rest.RepositoryInfo("Aavash232311", "transformer-pt-analysis");
-        // here we need to draw meaningful conclusion from minimum resources possible
-        return new JsonResult(Ok(result));
+
+        return new JsonResult(Ok());
     }
 }
