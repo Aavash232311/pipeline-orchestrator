@@ -13,3 +13,10 @@ __pycache__/
 dist/
 build/
 *.egg-info/
+
+# Data as well
+Data/
+
+
+.idea/
+.vs/

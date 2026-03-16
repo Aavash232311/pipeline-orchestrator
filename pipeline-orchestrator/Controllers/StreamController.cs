@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using pipeline_orchestrator.Services;
+using pipeline_orchestrator.Model;
 
 
 namespace pipeline_orchestrator.Controllers;
@@ -24,11 +25,11 @@ public class StreamController : ControllerBase
         Making things happen in series of pipelines. 
     */
 
-    [HttpGet]
     [Route("get-stream")]
-    public async Task<IActionResult> GetStream()
+    [HttpPost]
+    public async Task<IActionResult> GetStream(Talent pool)
     {
 
-        return new JsonResult(Ok());
+        return new JsonResult(Ok(pool));
     }
 }
