@@ -22,13 +22,24 @@ sub_frame = {
     "id": [str(uuid.uuid4()) for _ in range(len(df))],
     "preferredLabel": df["preferredLabel"],
     "altLabels": df["altLabels"],
-    "broaderConceptPT": df["broaderConceptPT"].str.split("|")
+    "broaderConceptPT": df["broaderConceptPT"]
 }
 
 
 skill_df = pd.DataFrame(sub_frame)
 
+
 connection_string = os.getenv('CONNECTION_STRING')
 
 conn = psycopg2.connect(connection_string)
 conn.cursor()
+
+
+with open("query/create_skill_table.sql", "r") as file:
+    create_table = file.read()
+
+''' Execute '''
+with conn.cursor() as cursor:
+    cursor.execute(create_table)
+
+conn.commit()
