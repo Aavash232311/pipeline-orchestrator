@@ -3,7 +3,7 @@
 
 CREATE TABLE IF NOT EXISTS SKILL_TABLE (
     id UUID PRIMARY KEY,
-    preferredLabel VARCHAR(255) NOT NULL,
-    altLabels VARCHAR(255) NOT NULL,
-    broaderConceptPT VARCHAR(255) NOT NULL
+    preferredLabel VARCHAR(2255) NULL,
+    altLabels VARCHAR(2255) NULL,
+    broaderConceptPT VARCHAR(2255) NULL
 )

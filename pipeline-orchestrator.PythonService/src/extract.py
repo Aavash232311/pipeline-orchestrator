@@ -20,9 +20,9 @@ df = pd.read_csv("../Data/set/digitalSkillsCollection_en.csv")
 
 sub_frame = {
     "id": [str(uuid.uuid4()) for _ in range(len(df))],
-    "preferredLabel": df["preferredLabel"],
-    "altLabels": df["altLabels"],
-    "broaderConceptPT": df["broaderConceptPT"]
+    "preferredLabel": df["preferredLabel"].fillna('') ,
+    "altLabels": df["altLabels"].fillna('') ,
+    "broaderConceptPT": df["broaderConceptPT"].fillna('')
 }
 
 
@@ -32,7 +32,7 @@ skill_df = pd.DataFrame(sub_frame)
 connection_string = os.getenv('CONNECTION_STRING')
 
 conn = psycopg2.connect(connection_string)
-conn.cursor()
+cur = conn.cursor()
 
 
 with open("query/create_skill_table.sql", "r") as file:
@@ -43,3 +43,18 @@ with conn.cursor() as cursor:
     cursor.execute(create_table)
 
 conn.commit()
+
+
+''' Let's export that subset of data to the csv file '''
+if not os.path.isfile("../Data/subset/subset.csv"): # if already then do not override this
+    skill_df.to_csv("./Export/skills.csv", index=False)
+
+copy_sql = """
+    COPY skill_table 
+    FROM STDIN 
+    WITH (FORMAT CSV, HEADER)
+"""
+
+with open('./Export/skills.csv', 'r', encoding='utf-8') as f:
+    cur.copy_expert(sql=copy_sql, file=f)
+    conn.commit()
