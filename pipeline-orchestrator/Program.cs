@@ -10,12 +10,20 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
+// python service pipeline as microservice 
+builder.Services.AddHttpClient("PythonPipeline", client =>
+{
+    client.BaseAddress = new Uri(
+        builder.Configuration["PIPELINE_URL"] ?? "http://localhost:8000"
+    );
+});
 
 builder.AddServiceDefaults();
 
 /* Dependency Injections 💉 */ 
 builder.Services.AddSingleton<Microservice>();
 builder.Services.AddHttpClient<REST>(); 
+
 // Add services to the container.
 
 builder.Services.AddControllers();

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using pipeline_orchestrator.Services;
 using pipeline_orchestrator.Model;
+using static System.Net.WebRequestMethods;
 
 
 namespace pipeline_orchestrator.Controllers;
@@ -11,11 +12,12 @@ public class StreamController : ControllerBase
 {
     private readonly REST _rest;
     private readonly HttpClient _httpClient;
-    public StreamController(REST rest_client, HttpClient httpClient)
+    private readonly HttpClient _microservice;
+    public StreamController(REST rest_client, HttpClient httpClient, IHttpClientFactory factory)
     {
         _rest = rest_client;
         _httpClient = httpClient;
-
+        _microservice = factory.CreateClient("PythonPipeline"); // configured in our Program.cs
 
         _httpClient.DefaultRequestHeaders.Add("User-Agent", "MyApp");
         _httpClient.DefaultRequestHeaders.Add("Accept", "application/vnd.github+json");
@@ -29,7 +31,10 @@ public class StreamController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> GetStream(Talent pool)
     {
+        var response = await _microservice.GetAsync("/skills");
+        response.EnsureSuccessStatusCode();
+        var context = await response.Content.ReadAsStringAsync();
 
-        return new JsonResult(Ok(pool));
+        return new JsonResult(Ok(context));
     }
 }

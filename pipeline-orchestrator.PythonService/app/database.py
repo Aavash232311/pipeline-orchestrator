@@ -4,8 +4,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 # For data analysis same environmant is used,
+# Different convention so that asyncpg accepts it
 # Even ASP.NET ORM uses same database, CRAZY
-# I am going insase this time 😹
 load_dotenv(Path(__file__).parent.parent / "src" / ".env") 
 
 DATABASE_URL = os.getenv("DATABASE_URL")

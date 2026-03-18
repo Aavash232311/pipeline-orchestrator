@@ -22,7 +22,6 @@ namespace pipeline_orchestrator.Services
             response.EnsureSuccessStatusCode();
 
             var jsonResponse = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"{jsonResponse}\n");
 
             return await response.Content.ReadAsStringAsync();
         }
