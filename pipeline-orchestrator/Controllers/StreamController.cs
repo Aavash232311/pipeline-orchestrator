@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using pipeline_orchestrator.Services;
 using pipeline_orchestrator.Model;
 using static System.Net.WebRequestMethods;
+using System.Text.Json;
+using System.Text;
 
 
 namespace pipeline_orchestrator.Controllers;
@@ -31,10 +33,13 @@ public class StreamController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> GetStream(Talent pool)
     {
-        var response = await _microservice.GetAsync("/skills");
-        response.EnsureSuccessStatusCode();
-        var context = await response.Content.ReadAsStringAsync();
+        var response = await _microservice.PostAsJsonAsync("/resume", pool);
 
-        return new JsonResult(Ok(context));
+        var jsonResponse = await response.Content.ReadAsStringAsync();
+
+        return new JsonResult(Ok(new
+        {
+            echo = jsonResponse
+        }));
     }
 }

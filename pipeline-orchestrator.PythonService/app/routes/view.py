@@ -1,11 +1,13 @@
-from fastapi import APIRouter
+from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Request
+from app.Models.resume_model import Talent
 from app.database import get_pool
 
 router = APIRouter()
 
 @router.get("/")
 def read_root():
-    return {"message": "TrueHire Pipeline running"}
+    return {"message": "Pipeline running"}
 
 
 @router.get("/skills")
@@ -14,3 +16,10 @@ async def get_skills():
     async with pool.acquire() as conn:
         rows = await conn.fetch("SELECT * FROM PROGRAMMING_LANG LIMIT 5")
         return [dict(row) for row in rows]
+    
+@router.post("/resume")
+async def upload_resume(request: Request, talent: Talent):
+    raw = await request.body()
+    print("RAW BODY:", raw.decode())
+    print("*" * 60)
+    return JSONResponse(content={"received": True, "talent": talent.dict()}, status_code=200)
