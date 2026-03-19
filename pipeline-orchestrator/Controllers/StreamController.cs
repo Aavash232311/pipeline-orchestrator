@@ -37,9 +37,6 @@ public class StreamController : ControllerBase
 
         var jsonResponse = await response.Content.ReadAsStringAsync();
 
-        return new JsonResult(Ok(new
-        {
-            echo = jsonResponse
-        }));
+        return new JsonResult(jsonResponse);
     }
 }

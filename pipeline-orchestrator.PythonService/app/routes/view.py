@@ -18,8 +18,10 @@ async def get_skills():
         return [dict(row) for row in rows]
     
 @router.post("/resume")
-async def upload_resume(request: Request, talent: Talent):
-    raw = await request.body()
-    print("RAW BODY:", raw.decode())
-    print("*" * 60)
-    return JSONResponse(content={"received": True, "talent": talent.dict()}, status_code=200)
+async def upload_resume(request: Request):
+    data = await request.json()
+    talent = Talent(**data)  
+    skills = talent.skills
+    return {
+        "pool": skills
+    }
