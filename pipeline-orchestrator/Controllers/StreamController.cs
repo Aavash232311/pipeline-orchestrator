@@ -25,10 +25,6 @@ public class StreamController : ControllerBase
         _httpClient.DefaultRequestHeaders.Add("Accept", "application/vnd.github+json");
     }
 
-    /* 
-        Making things happen in series of pipelines. 
-    */
-
     [Route("get-stream")]
     [HttpPost]
     public async Task<IActionResult> GetStream(Talent pool)
@@ -36,7 +32,7 @@ public class StreamController : ControllerBase
         var response = await _microservice.PostAsJsonAsync("/resume", pool);
 
         var jsonResponse = await response.Content.ReadAsStringAsync();
-
-        return new JsonResult(jsonResponse);
+        var sear = JsonSerializer.Deserialize<JsonElement>(jsonResponse);
+        return new JsonResult(sear);
     }
 }

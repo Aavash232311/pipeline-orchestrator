@@ -1,4 +1,3 @@
-from fastapi.responses import JSONResponse
 from fastapi import APIRouter, Request
 from app.Models.resume_model import Talent
 from app.database import get_pool
