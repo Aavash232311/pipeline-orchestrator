@@ -1,4 +1,4 @@
-﻿namespace pipeline_orchestrator.Services
+namespace pipeline_orchestrator.Services
 {
     public class Microservice
     {
@@ -8,3 +8,4 @@
         }
     }
 }
+// This file is not required to call python microservice
