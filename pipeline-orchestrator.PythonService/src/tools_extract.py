@@ -12,8 +12,12 @@ load_dotenv()
 df = pd.read_csv("../Data/set/technical_skills.csv")
 sub_frame = {  # why? because we will use your own id, we might need to scafold in asp.net application
     "id": [str(uuid.uuid4()) for _ in range(len(df))],
-    'name': df['Skill Name'],
-    'category': df['Category'],
+    'name': df['name'],
+    'category': df['category'],
+    'type': df['type'],
+    'field': df['field'],
+    'ecosystem': df['ecosystem'],
+    'difficulty': df['difficulty'],
 }
 sub_frame = pd.DataFrame(sub_frame)
 
@@ -40,9 +44,9 @@ if not os.path.isfile("../Data/subset/subset.csv"): # if already then do not ove
     sub_frame.to_csv("./Export/programming.csv", index=False)
 
 copy_sql = """
-    COPY programming_lang 
-    FROM STDIN 
-    WITH (FORMAT CSV, HEADER)
+    COPY programming_lang (id, name, category, type, field, ecosystem, difficulty)
+    FROM STDIN
+    WITH (FORMAT CSV, HEADER TRUE);
 """
 
 # Load the data in table, small one but let's load in SQL

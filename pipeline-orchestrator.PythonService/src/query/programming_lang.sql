@@ -2,6 +2,10 @@
 
 CREATE TABLE IF NOT EXISTS PROGRAMMING_LANG (
     id UUID PRIMARY KEY,
-    name VARCHAR(255)  NULL,
-    category VARCHAR(255) NULL
+    name VARCHAR(255) NULL,
+    category VARCHAR(255) NULL,
+    type VARCHAR(255) NULL,
+    field VARCHAR(255) NULL,
+    ecosystem VARCHAR(255) NULL,
+    difficulty INT NOT NULL DEFAULT 1
 );
