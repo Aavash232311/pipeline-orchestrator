@@ -33,6 +33,6 @@ public class StreamController : ControllerBase
 
         var jsonResponse = await response.Content.ReadAsStringAsync();
         var sear = JsonSerializer.Deserialize<JsonElement>(jsonResponse);
-        return new JsonResult(sear);
+        return new JsonResult(Ok(sear));
     }
 }
