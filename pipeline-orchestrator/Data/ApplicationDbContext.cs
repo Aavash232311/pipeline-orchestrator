@@ -1,6 +1,7 @@
 ﻿namespace pipeline_orchestrator.Data;
 using Microsoft.EntityFrameworkCore;
 using pipeline_orchestrator.Model;
+using pipeline_orchestrator.Model.Recruit;
 
 public partial class ApplicationDbContext : DbContext
 {
@@ -8,8 +9,7 @@ public partial class ApplicationDbContext : DbContext
     {}
     public DbSet<Talent> talent { get; set; } 
     public DbSet<Listing> listing { get; set; }
-
-
+    public DbSet<Posting> posting { get; set; }
     public virtual DbSet<ProgrammingLang> ProgrammingLangs { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
