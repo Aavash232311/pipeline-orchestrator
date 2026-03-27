@@ -28,7 +28,9 @@ async def upload_resume(request: Request):
         # ex: ['%C#%', '%.NET%', '%React%', '%TypeScript%', '%PostgreSQL%', '%Docker%', '%Kubernetes%']
         query = f"SELECT * FROM PROGRAMMING_LANG WHERE name ILIKE ANY($1)" # $1 gold standard for preventing SQL
         rows = await conn.fetch(query, result)
+
         if rows:
-            return [dict(row) for row in rows]
+            skills = [dict(row) for row in rows]
+            return skills
     
     raise HTTPException(status_code=404, detail="Item not found")
