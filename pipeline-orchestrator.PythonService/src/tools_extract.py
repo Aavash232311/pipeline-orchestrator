@@ -49,6 +49,12 @@ copy_sql = """
     WITH (FORMAT CSV, HEADER TRUE);
 """
 
+''' 
+Normalizing the difficulty score for technology
+What does logistic sigmoid have to say?
+
+s(x) = 1/1 + e^-x
+'''
 # Load the data in table, small one but let's load in SQL
 with open('./Export/programming.csv', 'r', encoding='utf-8') as f:
     cur.copy_expert(sql=copy_sql, file=f)
