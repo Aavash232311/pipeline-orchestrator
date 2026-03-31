@@ -5,8 +5,7 @@ using pipeline_orchestrator.Model.Recruit;
 
 public partial class ApplicationDbContext : DbContext
 {
-    public ApplicationDbContext(DbContextOptions options) : base(options)
-    {}
+    public ApplicationDbContext(DbContextOptions options) : base(options) { }
     public DbSet<Talent> talent { get; set; } 
     public DbSet<Listing> listing { get; set; }
     public DbSet<Posting> posting { get; set; }

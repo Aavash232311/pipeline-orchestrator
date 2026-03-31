@@ -15,7 +15,9 @@ async def get_skills():
     async with pool.acquire() as conn:
         rows = await conn.fetch("SELECT * FROM PROGRAMMING_LANG LIMIT 5")
         return [dict(row) for row in rows]
-    
+
+''' Run simplest form of ML here, it would be a joke to call this
+microservice just to query SQL '''
 @router.post("/resume")
 async def upload_resume(request: Request):
     data = await request.json()
