@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace pipeline_orchestrator.Model.Recruit
 {
@@ -34,12 +35,18 @@ namespace pipeline_orchestrator.Model.Recruit
 
     public class ScoringWeights
     {
-        public Guid id { get; set; }
+        public Guid Id { get; set; }
+        [Column("Weight_SkillMatch")]
         public decimal SkillMatch { get; set; } = 0.45m;
+        [Column("Weight_SkillDepth")]
         public decimal SkillDepth { get; set; } = 0.25m;
+        [Column("Weight_Experience")]
         public decimal Experience { get; set; } = 0.15m;
+        [Column("Weight_Education")]
         public decimal Education { get; set; } = 0.10m;
+        [Column("Weight_Certifications")]
         public decimal Certifications { get; set; } = 0.05m;
+        [Column("Weight_ActiveContribs")]
         public decimal ActiveContributions { get; set; } = 0.05m;
     }
 
