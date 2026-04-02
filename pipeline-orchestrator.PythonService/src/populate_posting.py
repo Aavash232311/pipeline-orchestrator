@@ -63,6 +63,9 @@ def get_sql_columns(table_name):
 def quoute_sql_columns(columns):
     return [f'"{col}"' for col in columns]
 
+def lower_array(arr):
+    return [col.lower() for col in arr]
+
 ''' Now let's make sure our sql header matches with these '''
 
 posting_sql_columns = get_sql_columns('posting')
@@ -76,11 +79,18 @@ df_posting['PreferredSkills'] = df_posting['PreferredSkills'].apply(pipe_to_post
 df_posting['RequiredSkills'] = df_posting['RequiredSkills'].apply(pipe_to_postgres_array)
 df_posting['RequiredLanguages'] = df_posting['RequiredLanguages'].apply(pipe_to_postgres_array)
 
-df_posting = df_posting[posting_sql_columns]
-df_posting.columns = df_posting.columns.str.lower() # again postgres expects lower case
 
-df_weights = df_weights[weights_sql_columns]
+df_posting.columns = df_posting.columns.str.lower() # again postgres expects lower case
+df_posting = df_posting.reindex(columns=lower_array(posting_sql_columns)) # make sure the order of the column is same as sql table, otherwise it will mess up the data and we don't want that.
+
+
 df_weights.columns = df_weights.columns.str.lower()
+df_weights = df_weights.reindex(columns=lower_array(weights_sql_columns))
+
+# some fields in the datbase may be optional
+df_listing.columns = df_listing.columns.str.lower()
+df_listing = df_listing.reindex(columns=lower_array(listing_sql_columns))
+
 
 
 '''
@@ -110,10 +120,21 @@ df_posting['jobtype'] = df_posting['jobtype'].map(job_type_mapping)
 posting_export_path = "./Export/posting.csv" 
 weights_export_path = "./Export/weights.csv"
 listing_export_path = "./Export/listing.csv"
-if not os.path.isfile(posting_export_path) and not os.path.isfile(weights_export_path) and not os.path.isfile(listing_export_path): # if already then do not override this
-    df_posting.to_csv(posting_export_path, index=False)
-    df_weights.to_csv(weights_export_path, index=False)
-    df_listing.to_csv(listing_export_path, index=False)
+
+def export_to_csv():
+    if not os.path.isfile(posting_export_path) and not os.path.isfile(weights_export_path) and not os.path.isfile(listing_export_path): # if already then do not override this
+        df_posting.to_csv(posting_export_path, index=False)
+        df_weights.to_csv(weights_export_path, index=False)
+        df_listing.to_csv(listing_export_path, index=False)
+
+if os.path.isfile(posting_export_path):
+    os.remove(posting_export_path)
+if os.path.isfile(weights_export_path):
+    os.remove(weights_export_path)
+if os.path.isfile(listing_export_path):
+    os.remove(listing_export_path)
+
+export_to_csv()
 
 # there we go this is a real pain for first time to figure out
 posting_sql_columns = quoute_sql_columns(posting_sql_columns)
@@ -134,8 +155,7 @@ load_wieght_Sql = f"""
             FROM STDIN
     WITH (FORMAT CSV, HEADER TRUE);
 """
-print(df_weights.columns.tolist())
-print(load_wieght_Sql)
+
 
 load_listing_sql = f"""
     COPY listing ({', '.join(listing_sql_columns)}) 
@@ -146,9 +166,10 @@ load_listing_sql = f"""
 with open(weights_export_path, 'r', encoding='utf-8') as f:
     cur.copy_expert(sql=load_wieght_Sql, file=f)
 
+with open(listing_export_path, 'r', encoding='utf-8') as f:
+    cur.copy_expert(sql=load_listing_sql, file=f)
+
+with open(posting_export_path, 'r', encoding='utf-8') as f:
+    cur.copy_expert(sql=load_posting_sql, file=f)
 
 conn.commit()
-# with open(weights_export_path, 'r', encoding='utf-8') as f:
-#     cur.copy_expert(sql=load_wieght_Sql, file=f)
-
-
