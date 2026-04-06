@@ -1,6 +1,16 @@
 from fastapi import APIRouter, HTTPException, Request
 from app.Models.resume_model import Talent
 from app.database import get_pool
+from app.Models.skill_model import Skill
+from pydantic import BaseModel
+
+class Skill(BaseModel):
+    name: str
+    difficulty_normalized: float  
+    category: str
+
+    class Config:
+        from_attributes = True 
 
 router = APIRouter()
 
@@ -32,7 +42,7 @@ async def upload_resume(request: Request):
         rows = await conn.fetch(query, result)
 
         if rows:
-            skills = [dict(row) for row in rows]
-            return skills
+            cast_skills = [Skill(**skill) for skill in rows] 
+            return cast_skills
     
     raise HTTPException(status_code=404, detail="Item not found")

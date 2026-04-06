@@ -1,11 +1,8 @@
 import os
-import csv
 import uuid
-from nbconvert import export
 import psycopg2
 import pandas as pd
 from dotenv import load_dotenv
-from collections import Counter
 
 load_dotenv()
 ''' It's about time and why is it making me do datascience work I really don't know,

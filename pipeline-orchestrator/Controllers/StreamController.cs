@@ -2,8 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using pipeline_orchestrator.Services;
 using pipeline_orchestrator.Model;
 using System.Text.Json;
-using System.Text;
 using pipeline_orchestrator.Data;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace pipeline_orchestrator.Controllers;
@@ -35,6 +35,10 @@ public class StreamController : ControllerBase
 
         var jsonResponse = await response.Content.ReadAsStringAsync();
         var sear = JsonSerializer.Deserialize<JsonElement>(jsonResponse);
+
+        var includeWeightTable = _context.posting.Include(
+            w => w.Weights     
+        ).Include(l => l.Listing);
         return new JsonResult(Ok(sear));
     }
 }
