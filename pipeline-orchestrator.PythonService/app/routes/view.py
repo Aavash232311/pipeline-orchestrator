@@ -38,11 +38,34 @@ async def upload_resume(request: Request):
         result = [f"%{skill}%" for skill in talent.skills]  
 
         # ex: ['%C#%', '%.NET%', '%React%', '%TypeScript%', '%PostgreSQL%', '%Docker%', '%Kubernetes%']
-        query = f"SELECT * FROM PROGRAMMING_LANG WHERE name ILIKE ANY($1)" # $1 gold standard for preventing SQL
-        rows = await conn.fetch(query, result)
+        skill_fetch_query = f"""
+            SELECT * FROM
+              PROGRAMMING_LANG
+            WHERE name ILIKE ANY($1)
+        """
+        ''' In c# I am confident about ORM fetching .toListAsync() 
+        after that I do filteting in certian case if necessary but in this
+        case the language is slow and scaling might be difficult. '''
 
-        if rows:
-            cast_skills = [Skill(**skill) for skill in rows] 
-            return cast_skills
+
+
+         # $1 gold standard for preventing SQL
+        rows_skills = await conn.fetch(skill_fetch_query, result)
+
+        if not rows_skills: # this language is super slow, and let's do search in SQL level instead.
+             raise HTTPException(status_code=404, detail="Item not found")
+        # we don't have typecheck in the bloodline here, which is a bummer.
+        dict_skills = [dict(row) for row in rows_skills] # this is always small, even if 100 skills
+
+
+        unique_types = set(row["type"] for row in dict_skills) # these are different types of skills that a user might have.
+        unique_categories = set(row["category"] for row in dict_skills) # these are different categories of skills that a user might have.
+        unique_fields = set(row["field"] for row in dict_skills) # these are different fields of skills that a user might have.
+        return  {
+            "all_skills": dict_skills,
+            "unique_types": list(unique_types),
+            "unique_categories": list(unique_categories),
+            "unique_fields": list(unique_fields)
+        }
     
     raise HTTPException(status_code=404, detail="Item not found")

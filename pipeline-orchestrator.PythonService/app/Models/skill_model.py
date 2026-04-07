@@ -8,5 +8,9 @@ class Skill(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
     id: UUID
     name: str
-    difficulty_normalized: float  
-    category: str
+    difficulty_normalized: float
+    category: str = None
+    type: str = None
+    field: str = None
+    ecosystem: str = None
+    difficulty: int = None
