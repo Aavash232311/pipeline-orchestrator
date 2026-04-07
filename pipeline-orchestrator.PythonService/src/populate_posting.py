@@ -111,7 +111,12 @@ job_type_mapping = {
     'Freelance': 4
 }
 
-df_posting['jobtype'] = df_posting['jobtype'].map(job_type_mapping)
+
+# UGH, LEAVE IT, NOOOO
+
+df_posting['jobtype'] = df_posting['jobtype'].astype('category').cat.codes
+''' Just use above line of code for mapping enum when necessary if
+we have abstraction in dataset. '''
 
 # export this out now
 posting_export_path = "./Export/posting.csv" 

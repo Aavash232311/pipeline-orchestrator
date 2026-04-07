@@ -34,11 +34,20 @@ public class StreamController : ControllerBase
         var response = await _microservice.PostAsJsonAsync("/resume", pool);
 
         var jsonResponse = await response.Content.ReadAsStringAsync();
+
+        /*
+         Calling a "python" microservice is the slowest part when scaling an application.
+         This project might not work out good but it can answer a different question.
+         
+         .NET has the power here, so let's filter out the data from boolean attributes that we can use here.
+         Only few in a pool goes to the ML model.
+
+           
+         */
+
+
         var sear = JsonSerializer.Deserialize<JsonElement>(jsonResponse);
 
-        var includeWeightTable = _context.posting.Include(
-            w => w.Weights     
-        ).Include(l => l.Listing);
         return new JsonResult(Ok(sear));
     }
 }

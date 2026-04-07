@@ -31,6 +31,12 @@ namespace pipeline_orchestrator.Model.Recruit
         public DateTime PostedAt { get; set; } = DateTime.UtcNow;
         public DateTime? ExpiresAt { get; set; }
         public bool IsActive { get; set; } = true;
+        /* Just like me getting rejected, recruiter might need to know for how long candiate has been in college */
+        public int? YearInCollege { get; set; } = 0;
+        public bool? HasGraduated { get; set; } = false;
+        public JobLevel JobLevel { get; set; } = JobLevel.Entry;
+        public JobDelivery JobDelivery { get; set; } = JobDelivery.Onsite;  
+
     }
 
     public class ScoringWeights
@@ -58,4 +64,22 @@ namespace pipeline_orchestrator.Model.Recruit
         Internship,
         Freelance
     }
+
+    public enum JobLevel
+    {
+        Entry,
+        Mid,
+        Senior,
+        Lead,
+        Manager,
+        Director,
+        Executive
+    };
+
+    public enum JobDelivery
+    {
+        Onsite,
+        Remote,
+        Hybrid
+    };
 }
