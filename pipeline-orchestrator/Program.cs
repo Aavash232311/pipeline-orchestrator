@@ -1,10 +1,11 @@
 ﻿using pipeline_orchestrator.Data;
 using Microsoft.EntityFrameworkCore;
 using pipeline_orchestrator.Services;
+using pipeline_orchestrator.Engines;
 
 var builder = WebApplication.CreateBuilder(args);
-
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+string connectionStringName = "DefaultConnection";
+var connectionString = builder.Configuration.GetConnectionString(connectionStringName);
 
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -20,10 +21,10 @@ builder.Services.AddHttpClient("PythonPipeline", client =>
 
 builder.AddServiceDefaults();
 
-/* Dependency Injections 💉 */ 
+/* Dependency Injections 💉 */
 builder.Services.AddSingleton<Microservice>();
-builder.Services.AddHttpClient<REST>(); 
-
+builder.Services.AddHttpClient<REST>();
+builder.Services.AddSingleton<Screening>();
 // Add services to the container.
 
 builder.Services.AddControllers();

@@ -4,6 +4,8 @@ using pipeline_orchestrator.Model;
 using System.Text.Json;
 using pipeline_orchestrator.Data;
 using Microsoft.EntityFrameworkCore;
+using pipeline_orchestrator.Model.Recruit;
+using pipeline_orchestrator.Engines;
 
 
 namespace pipeline_orchestrator.Controllers;
@@ -16,7 +18,8 @@ public class StreamController : ControllerBase
     private readonly HttpClient _httpClient;
     private readonly HttpClient _microservice;
     private readonly ApplicationDbContext _context;
-    public StreamController(REST rest_client, HttpClient httpClient, IHttpClientFactory factory, ApplicationDbContext context)
+    private readonly Screening _localScreening;
+    public StreamController(REST rest_client, HttpClient httpClient, IHttpClientFactory factory, ApplicationDbContext context, Screening localScreening)
     {
         _rest = rest_client;
         _httpClient = httpClient;
@@ -25,11 +28,12 @@ public class StreamController : ControllerBase
         _httpClient.DefaultRequestHeaders.Add("User-Agent", "MyApp");
         _httpClient.DefaultRequestHeaders.Add("Accept", "application/vnd.github+json");
         _context = context;
+        _localScreening = localScreening;
     }
 
     [Route("get-stream")]
     [HttpPost]
-    public async Task<IActionResult> GetStream(Talent pool)
+    public async Task<IActionResult> GetStream(Talent pool, Guid postingId)
     {
         var response = await _microservice.PostAsJsonAsync("/resume", pool);
 
@@ -44,6 +48,12 @@ public class StreamController : ControllerBase
 
            
          */
+
+        Posting? posting = await _context.posting.FindAsync(postingId);
+        if (posting == null)
+        {
+            return new JsonResult(NotFound());
+        };
 
 
         var sear = JsonSerializer.Deserialize<JsonElement>(jsonResponse);
