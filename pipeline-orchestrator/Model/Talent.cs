@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using pipeline_orchestrator.Model.Recruit;
+using System.ComponentModel.DataAnnotations;
 
 namespace pipeline_orchestrator.Model
 {
@@ -41,5 +42,8 @@ namespace pipeline_orchestrator.Model
         public List<String> Languages { get; set; } = new List<string>();
         public List<URL>? AdditionalURL { get; set; } = new List<URL>();    
         public List<Certifications>? Certifications { get; set; } = new List<Certifications>();
+        public JobType? JobType { get; set; } = new JobType();  
+        public JobLevel? JobLevel { get; set; } = new JobLevel();
+        public JobDelivery? JobDelivery { get; set; } = new JobDelivery();
     }
 }

@@ -6,6 +6,7 @@ using pipeline_orchestrator.Data;
 using Microsoft.EntityFrameworkCore;
 using pipeline_orchestrator.Model.Recruit;
 using pipeline_orchestrator.Engines;
+using pipeline_orchestrator.Migrations;
 
 
 namespace pipeline_orchestrator.Controllers;
@@ -58,6 +59,6 @@ public class StreamController : ControllerBase
 
         var sear = JsonSerializer.Deserialize<JsonElement>(jsonResponse);
 
-        return new JsonResult(Ok(sear));
+        return new JsonResult(Ok(posting));
     }
 }

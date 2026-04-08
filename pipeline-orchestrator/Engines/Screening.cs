@@ -12,15 +12,10 @@ namespace pipeline_orchestrator.Engines
 {
     public class Screening
     {
-        public bool BasicScreening(Posting posting, Talent pool)
+        public Dictionary<string, bool> BasicScreening(Posting posting, Talent pool)
         {
-            if (posting == null)
-            {
-                throw new Exception("Posting is null");
-            }
 
-
-            return true;
+            return new Dictionary<string, bool>();
         }
     }
 }
