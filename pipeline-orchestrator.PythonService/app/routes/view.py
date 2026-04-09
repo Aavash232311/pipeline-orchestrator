@@ -1,7 +1,9 @@
+from fastapi import Request
 from app.database import get_pool
 from pydantic import BaseModel
 from fastapi import APIRouter
 from app.Machine_Learning.embedding_lm import EmbeddingLLM
+from typing import Any
 
 
 class Skill(BaseModel):
@@ -26,14 +28,19 @@ async def get_skills():
         rows = await conn.fetch("SELECT * FROM PROGRAMMING_LANG LIMIT 5")
         return [dict(row) for row in rows]
 
+class EmbeddingRequest(BaseModel):
+    payload: Any  # or List[str] if Experience is a list
 
 ''' Side note: my other github repo has explanation about embeddings in depth.'''
 
 # Loaded once the microservice starts, but trade off again 
 embedding_model = EmbeddingLLM('sentence-transformers/all-MiniLM-L6-v2')
 
+
 @router.post("/feature_embeddings")
-async def upload_resume_skills(features: list[str]):
+async def upload_resume_skills(request: EmbeddingRequest):
+    get_embedding_payload = request.payload
+    learned_embeddings = embedding_model.tokenize(get_embedding_payload).tolist()
     return {
-        'Embeddings': embedding_model.tokenize(features).tolist()
+        'received_payload': learned_embeddings
     }

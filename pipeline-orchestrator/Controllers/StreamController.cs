@@ -61,13 +61,21 @@ public class StreamController : ControllerBase
             TechnicalSkills = metaDataFromPdf.Skills,
 
         };
-        _context.Add(newTalent);
+
+        //_context.Add(newTalent);
         //await _context.SaveChangesAsync();
         // let's retrieve the experience first 
 
-        var response = await _microservice.PostAsJsonAsync("/feature_embeddings", metaDataFromPdf.Experience);
+        var response = await _microservice.PostAsJsonAsync("/feature_embeddings", new
+        {
+            payload = metaDataFromPdf.Experience
+        });
 
         var jsonResponse = await response.Content.ReadAsStringAsync();
-        return new JsonResult(Ok(metaDataFromPdf));
+        return new JsonResult(Ok(new
+        {
+            exp = metaDataFromPdf.Experience,
+            embeddings = jsonResponse
+        }));
     }
 }
