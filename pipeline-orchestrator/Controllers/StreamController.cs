@@ -68,7 +68,10 @@ public class StreamController : ControllerBase
 
         var response = await _microservice.PostAsJsonAsync("/feature_embeddings", new
         {
-            payload = metaDataFromPdf.Experience
+            exp = metaDataFromPdf.Experience,
+            summary = metaDataFromPdf.Summary,
+            skills = metaDataFromPdf.Skills,
+            projects = metaDataFromPdf.Projects,
         });
 
         var jsonResponse = await response.Content.ReadAsStringAsync();

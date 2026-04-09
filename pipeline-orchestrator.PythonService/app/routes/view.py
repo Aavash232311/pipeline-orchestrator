@@ -29,7 +29,10 @@ async def get_skills():
         return [dict(row) for row in rows]
 
 class EmbeddingRequest(BaseModel):
-    payload: Any  # or List[str] if Experience is a list
+    exp: Any
+    summary: Any
+    skills: Any
+    projects: Any
 
 ''' Side note: my other github repo has explanation about embeddings in depth.'''
 
@@ -39,8 +42,12 @@ embedding_model = EmbeddingLLM('sentence-transformers/all-MiniLM-L6-v2')
 
 @router.post("/feature_embeddings")
 async def upload_resume_skills(request: EmbeddingRequest):
-    get_embedding_payload = request.payload
-    learned_embeddings = embedding_model.tokenize(get_embedding_payload).tolist()
+    learned_embeddings = embedding_model.tokenize([
+        request.exp,
+        request.summary,
+        request.skills,
+        request.projects
+    ]).tolist()
     return {
         'received_payload': learned_embeddings
     }
