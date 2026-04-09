@@ -9,41 +9,19 @@ namespace pipeline_orchestrator.Model
         [MaxLength(150)]
         [Required]
         public string Name { get; set; } = string.Empty;
-
         [MaxLength(150)]
         [Required(ErrorMessage = "Email message is required")]
         [EmailAddress(ErrorMessage = "Illegal format email")]
         public string Email { get; set; } = string.Empty;
 
-        [MaxLength(15)]
-        [Required(ErrorMessage = "Phone number is required")]
-        [Phone(ErrorMessage = "Illegal format phone number")]
-        public string Phone { get; set; } = string.Empty;
-
-        [MaxLength(150)]
-        [Required(ErrorMessage = "State is required")]  
-        public string State { get; set; } = string.Empty;
-
-        [MaxLength(150)]
-        [Required(ErrorMessage = "City is required")]
-        public string City { get; set; } = string.Empty;
-        [Url(ErrorMessage = "Invalid URL format")]
-        [MaxLength(2500)]
-        public string? GitHubUrl { get; set; } = string.Empty;
-
-        [MaxLength(3000)]
+        [MaxLength(8000)]
+        public string? Experience { get; set; } = string.Empty; // Basically we send this to microservice which will feed this to LLM
+        [MaxLength(8000)]
+        public string? Projects { get; set; } = string.Empty;
+        [MaxLength(5000)]
         public string? ProfessionalSummary { get; set; } = string.Empty;
+        [MaxLength(8000)]
+        public string? TechnicalSkills { get; set; } = string.Empty;
 
-        public Education? Education { get; set; } = new Education();
-        public Experience? Experience { get; set; } = new Experience();
-        [Required]
-        public List<String> Skills { get; set; } = new List<string>();
-        [Required]
-        public List<String> Languages { get; set; } = new List<string>();
-        public List<URL>? AdditionalURL { get; set; } = new List<URL>();    
-        public List<Certifications>? Certifications { get; set; } = new List<Certifications>();
-        public JobType? JobType { get; set; } = new JobType();  
-        public JobLevel? JobLevel { get; set; } = new JobLevel();
-        public JobDelivery? JobDelivery { get; set; } = new JobDelivery();
     }
 }

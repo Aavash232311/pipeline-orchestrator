@@ -1,12 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using pipeline_orchestrator.Services;
-using pipeline_orchestrator.Model;
-using System.Text.Json;
 using pipeline_orchestrator.Data;
-using Microsoft.EntityFrameworkCore;
-using pipeline_orchestrator.Model.Recruit;
+using pipeline_orchestrator.Services;
 using pipeline_orchestrator.Engines;
-using pipeline_orchestrator.Migrations;
+using pipeline_orchestrator.Model;
 
 
 namespace pipeline_orchestrator.Controllers;
@@ -32,33 +28,46 @@ public class StreamController : ControllerBase
         _localScreening = localScreening;
     }
 
-    [Route("get-stream")]
+    [Route("pdf-metadata")]
     [HttpPost]
-    public async Task<IActionResult> GetStream(Talent pool, Guid postingId)
+    public async Task<IActionResult> GetStream(Guid postingId, IFormFile pdfFile)
     {
-        var response = await _microservice.PostAsJsonAsync("/resume", pool);
+        if (pdfFile == null || pdfFile.Length == 0) return BadRequest("No file uploaded.");
+        // let's do that pdf game here and store metadata in the database
+        int maxFileSizeMb = 5;
+        long fileSize = maxFileSizeMb * 1024 * 1024;
+
+        if (pdfFile.Length > fileSize)
+        {
+            return BadRequest(new
+            {
+                message = $"File length not to exceed {maxFileSizeMb} mb"
+            });
+        }
+
+        if (pdfFile.ContentType != "application/pdf")
+        {
+            return BadRequest(new { message = "Only PDF documents are accepted." });
+        }
+
+        ExtractionTopic metaDataFromPdf = _localScreening.MetaData(pdfFile);
+        Talent newTalent = new Talent()
+        {
+            Name = "Dummy Name <we will get using this interface>",
+            Email = "Email <we will get using this interface>",
+            Experience = metaDataFromPdf.Experience,
+            Projects = metaDataFromPdf.Projects,
+            ProfessionalSummary = metaDataFromPdf.Summary,
+            TechnicalSkills = metaDataFromPdf.Skills,
+
+        };
+        _context.Add(newTalent);
+        //await _context.SaveChangesAsync();
+        // let's retrieve the experience first 
+
+        var response = await _microservice.PostAsJsonAsync("/feature_embeddings", metaDataFromPdf.Experience);
 
         var jsonResponse = await response.Content.ReadAsStringAsync();
-
-        /*
-         Calling a "python" microservice is the slowest part when scaling an application.
-         This project might not work out good but it can answer a different question.
-         
-         .NET has the power here, so let's filter out the data from boolean attributes that we can use here.
-         Only few in a pool goes to the ML model.
-
-           
-         */
-
-        Posting? posting = await _context.posting.FindAsync(postingId);
-        if (posting == null)
-        {
-            return new JsonResult(NotFound());
-        };
-
-
-        var sear = JsonSerializer.Deserialize<JsonElement>(jsonResponse);
-
-        return new JsonResult(Ok(posting));
+        return new JsonResult(Ok(metaDataFromPdf));
     }
 }
