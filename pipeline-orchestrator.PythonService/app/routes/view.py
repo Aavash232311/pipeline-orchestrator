@@ -48,6 +48,10 @@ async def upload_resume_skills(request: EmbeddingRequest):
         request.skills,
         request.projects
     ]).tolist()
+
+    # let's fetch the posting for this job from the datbase and fine the cosine similarity
+
+    
     return {
         'received_payload': learned_embeddings
     }
