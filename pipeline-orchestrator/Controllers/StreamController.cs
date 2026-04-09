@@ -72,13 +72,14 @@ public class StreamController : ControllerBase
             summary = metaDataFromPdf.Summary,
             skills = metaDataFromPdf.Skills,
             projects = metaDataFromPdf.Projects,
+            posting_id = postingId
         });
 
         var jsonResponse = await response.Content.ReadAsStringAsync();
         return new JsonResult(Ok(new
         {
-            exp = metaDataFromPdf.Experience,
             embeddings = jsonResponse
         }));
     }
+
 }
