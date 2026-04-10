@@ -1,8 +1,9 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using pipeline_orchestrator.Data;
 using pipeline_orchestrator.Services;
 using pipeline_orchestrator.Engines;
 using pipeline_orchestrator.Model;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace pipeline_orchestrator.Controllers;
@@ -50,6 +51,12 @@ public class StreamController : ControllerBase
             return BadRequest(new { message = "Only PDF documents are accepted." });
         }
 
+        var posting = await _context.posting.FirstOrDefaultAsync(x => x.Id == postingId);
+
+        if (posting == null) return new JsonResult(BadRequest(new { detail = "Posting not found." }));
+
+
+        string postingText = _localScreening.LoadChunkForLLM(posting);
         ExtractionTopic metaDataFromPdf = _localScreening.MetaData(pdfFile);
         Talent newTalent = new Talent()
         {
@@ -65,21 +72,15 @@ public class StreamController : ControllerBase
         //_context.Add(newTalent);
         //await _context.SaveChangesAsync();
         // let's retrieve the experience first 
-
+        string candidateTextChunk = _localScreening.CatCandidateAttribute(metaDataFromPdf);
         var response = await _microservice.PostAsJsonAsync("/feature_embeddings", new
         {
-            exp = metaDataFromPdf.Experience,
-            summary = metaDataFromPdf.Summary,
-            skills = metaDataFromPdf.Skills,
-            projects = metaDataFromPdf.Projects,
-            posting_id = postingId
+            Candidate = candidateTextChunk,
+            Posting = postingText
         });
-
+        // until and unless this system does not hire me there is a false negative. Just kidding :)
         var jsonResponse = await response.Content.ReadAsStringAsync();
-        return new JsonResult(Ok(new
-        {
-            embeddings = jsonResponse
-        }));
+        return new JsonResult(jsonResponse);
     }
 
 }

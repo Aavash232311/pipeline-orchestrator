@@ -16,9 +16,9 @@ namespace pipeline_orchestrator.Model.Recruit
         [MaxLength(255)]
         public string CompanyName { get; set; } = string.Empty;
         [Required]
-        public List<string> RequiredSkills { get; set; } = new List<string>();
-        public List<string> PreferredSkills { get; set; } = new List<string>();
-        public List<string> RequiredLanguages { get; set; } = new List<string>();
+        public List<string>? RequiredSkills { get; set; } = new List<string>();
+        public List<string>? PreferredSkills { get; set; } = new List<string>();
+        public List<string>? RequiredLanguages { get; set; } = new List<string>();
         public Listing? Listing { get; set; } = new Listing();
         public int MinExperienceYears { get; set; } = 0;
         public int MaxExperienceYears { get; set; } = 10;
@@ -26,7 +26,6 @@ namespace pipeline_orchestrator.Model.Recruit
         public decimal? SalaryMax { get; set; }
         [MaxLength(50)]
         public string? Currency { get; set; } = "USD";
-        public JobType JobType { get; set; } = JobType.FullTime;
         public ScoringWeights Weights { get; set; } = new ScoringWeights();
         public DateTime PostedAt { get; set; } = DateTime.UtcNow;
         public DateTime? ExpiresAt { get; set; }
@@ -34,8 +33,6 @@ namespace pipeline_orchestrator.Model.Recruit
         /* Just like me getting rejected, recruiter might need to know for how long candiate has been in college */
         public int? YearInCollege { get; set; } = 0;
         public bool? HasGraduated { get; set; } = false;
-        public JobLevel JobLevel { get; set; } = JobLevel.Entry;
-        public JobDelivery JobDelivery { get; set; } = JobDelivery.Onsite;  
 
     }
 
@@ -55,31 +52,4 @@ namespace pipeline_orchestrator.Model.Recruit
         [Column("Weight_ActiveContribs")]
         public decimal ActiveContributions { get; set; } = 0.05m;
     }
-
-    public enum JobType
-    {
-        FullTime,
-        PartTime,
-        Contract,
-        Internship,
-        Freelance
-    }
-
-    public enum JobLevel
-    {
-        Entry,
-        Mid,
-        Senior,
-        Lead,
-        Manager,
-        Director,
-        Executive
-    };
-
-    public enum JobDelivery
-    {
-        Onsite,
-        Remote,
-        Hybrid
-    };
 }

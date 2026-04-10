@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using pipeline_orchestrator.Model.Recruit;
+using System.Text.RegularExpressions;
 using UglyToad.PdfPig;
 
 namespace pipeline_orchestrator.Engines
@@ -52,21 +53,36 @@ namespace pipeline_orchestrator.Engines
             string projects = ExtractBetween(fullText, projectsPattern, new[] { summaryPattern, experiencePattern, @"(?i)\bEDUCATION\b" });
             string skills = ExtractBetween(fullText, @"(?i)TECHNICAL SKILLS", new[] { @"(?i)EXPERIENCE", @"(?i)PROJECTS" });
 
-            var returnTopics = new ExtractionTopic(
+
+            // cleaned data for the DB and AI pipeline
+            return new ExtractionTopic(
                Clean(experience),
                Clean(summary),
                Clean(projects),
                Clean(skills)
              );
+        }
 
-            // cleaned data for the DB and AI pipeline
-            return returnTopics;
+        public string CatCandidateAttribute(ExtractionTopic candidate)
+        {
+            string returnString = string.Empty;
+
+            if (candidate == null)
+            {
+                throw new Exception("Arg expected 1 cannot be null");
+            }
+
+            returnString += candidate.Experience + " ";
+            returnString += candidate.Summary + " ";
+            returnString += candidate.Projects + " ";
+            returnString += candidate.Skills;
+            return returnString;
         }
 
         private string ExtractBetween(string text, string startPattern, string[] endPatterns)
         {
             var startMatch = Regex.Match(text, startPattern); // basically asking for patterns like experience 
-            if (!startMatch.Success) return "Section Not Found";
+            if (!startMatch.Success) return null;
 
             int startIndex = startMatch.Index + startMatch.Length;
             int minEndIndex = text.Length;
@@ -87,8 +103,41 @@ namespace pipeline_orchestrator.Engines
 
         private string Clean(string input)
         {
-            if (input == "Section Not Found") return input;
+            if (input == null) return input;
             return Regex.Replace(input.Replace("\n", " "), @"\s+", " ").Trim();
         }
+
+
+        public string LoadChunkForLLM(Posting posting)
+        {
+            if (posting == null)
+            {
+                throw new Exception("Posting is null");
+            }
+
+            string returnChunk = string.Empty;
+            returnChunk += posting.Title + " ";
+
+            returnChunk += posting.Description;
+           
+
+            if (posting.RequiredSkills != null)
+            {
+                returnChunk += string.Join(", ", posting.RequiredSkills);
+            }
+            if (posting.PreferredSkills != null)
+            {
+                returnChunk += string.Join(", ", posting.PreferredSkills);
+            }
+            if (posting.RequiredLanguages != null)
+            {
+                returnChunk += string.Join(", ", posting.RequiredLanguages);
+            }
+
+
+
+            return returnChunk;
+        }
+        
     }
 }
