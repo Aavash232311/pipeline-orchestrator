@@ -88,36 +88,6 @@ df_weights = df_weights.reindex(columns=lower_array(weights_sql_columns))
 df_listing.columns = df_listing.columns.str.lower()
 df_listing = df_listing.reindex(columns=lower_array(listing_sql_columns))
 
-
-
-'''
-.NET ORM mapped the JobType to enum, so it's basically
-integer we need to make sure we do data cleaning here.
-public enum JobType
-{
-    FullTime,
-    PartTime,
-    Contract,
-    Internship,
-    Freelance
-}
-
- '''
-job_type_mapping = {
-    'FullTime': 0,
-    'PartTime': 1,
-    'Contract': 2,
-    'Internship': 3,
-    'Freelance': 4
-}
-
-
-# UGH, LEAVE IT, NOOOO
-
-df_posting['jobtype'] = df_posting['jobtype'].astype('category').cat.codes
-''' Just use above line of code for mapping enum when necessary if
-we have abstraction in dataset. '''
-
 # export this out now
 posting_export_path = "./Export/posting.csv" 
 weights_export_path = "./Export/weights.csv"

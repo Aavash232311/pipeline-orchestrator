@@ -18,4 +18,5 @@ class EmbeddingLLM:
 class CosineSimilarity:
 
     def compute_similarity(self, embedding1, embedding2):
-        return F.cosine_similarity(embedding1, embedding2, dim=0)
+        score = F.cosine_similarity(embedding1.unsqueeze(0), embedding2.unsqueeze(0))
+        return max(-1.0, min(1.0, score.item()))

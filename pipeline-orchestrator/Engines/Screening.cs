@@ -1,6 +1,8 @@
 ﻿using pipeline_orchestrator.Model.Recruit;
 using System.Text.RegularExpressions;
+using UglyToad.PdfPig.Content;
 using UglyToad.PdfPig;
+using System.Text;
 
 namespace pipeline_orchestrator.Engines
 {
@@ -12,7 +14,6 @@ namespace pipeline_orchestrator.Engines
             this.Summary = Summary;
             this.Skills = Skills;
             this.Projects = Projects;
-
         }
         public string? Experience { get; set; }
         public string? Summary { get; set; }
@@ -107,7 +108,7 @@ namespace pipeline_orchestrator.Engines
             return Regex.Replace(input.Replace("\n", " "), @"\s+", " ").Trim();
         }
 
-
+        /* this method extracts some pdf headers and puts them in the text chunk. */ 
         public string LoadChunkForLLM(Posting posting)
         {
             if (posting == null)
@@ -133,11 +134,29 @@ namespace pipeline_orchestrator.Engines
             {
                 returnChunk += string.Join(", ", posting.RequiredLanguages);
             }
-
-
-
+            if (posting.Title != null)
+            {
+                returnChunk += posting.Title + " ";
+            }
             return returnChunk;
         }
-        
+
+
+        /* we need to send pdf text to LLM */
+        public string ExtractTextFromPdf(IFormFile pdfFile)
+        {
+            var sb = new StringBuilder();
+
+            using var stream = pdfFile.OpenReadStream();
+            using var document = PdfDocument.Open(stream);
+
+            foreach (Page page in document.GetPages())
+            {
+                sb.AppendLine(page.Text);
+            }
+
+            return sb.ToString();
+        }
+
     }
 }

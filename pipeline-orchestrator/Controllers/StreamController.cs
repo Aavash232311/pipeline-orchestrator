@@ -72,15 +72,17 @@ public class StreamController : ControllerBase
         //_context.Add(newTalent);
         //await _context.SaveChangesAsync();
         // let's retrieve the experience first 
-        string candidateTextChunk = _localScreening.CatCandidateAttribute(metaDataFromPdf);
         var response = await _microservice.PostAsJsonAsync("/feature_embeddings", new
         {
-            Candidate = candidateTextChunk,
+            Candidate = _localScreening.ExtractTextFromPdf(pdfFile),
             Posting = postingText
         });
         // until and unless this system does not hire me there is a false negative. Just kidding :)
         var jsonResponse = await response.Content.ReadAsStringAsync();
-        return new JsonResult(jsonResponse);
+        return new JsonResult(new
+        {
+            cosine = jsonResponse
+        });
     }
 
 }
