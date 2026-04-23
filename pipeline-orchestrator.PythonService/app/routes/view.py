@@ -1,10 +1,12 @@
+import torch
 from app.database import get_pool
 from pydantic import BaseModel
 from fastapi import APIRouter
-from app.Machine_Learning.embedding_lm import EmbeddingLLM
 from uuid import UUID
 from typing import Any
 from fastapi import FastAPI, HTTPException
+from app.Machine_Learning.embedding_lm import CosineSimilarity
+from app.Machine_Learning.embedding_lm import EmbeddingLLM
 
 class Skill(BaseModel):
     name: str
@@ -50,8 +52,10 @@ async def upload_resume_skills(data: FeatureRequest):
     between the two chunks of text. Let's prepare that in c# backend
       
      '''
+    
+    cosine_similarity = CosineSimilarity()
+    similarity_score = cosine_similarity.compute_similarity(torch.tensor(candidate_token), torch.tensor(posting_token))
 
     return {
-        'candidate_token': candidate_token,
-        'posting_token': posting_token
+        'similarity_score': similarity_score.item()
     }
