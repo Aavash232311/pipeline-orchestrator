@@ -1,11 +1,15 @@
-﻿using pipeline_orchestrator.Model.Recruit;
-using System.Text.RegularExpressions;
-using UglyToad.PdfPig.Content;
-using UglyToad.PdfPig;
+﻿using OpenTelemetry.Trace;
+using pipeline_orchestrator.Model.Recruit;
 using System.Text;
+using System.Text.RegularExpressions;
+using UglyToad.PdfPig;
+using UglyToad.PdfPig.Actions;
+using UglyToad.PdfPig.Annotations;
+using UglyToad.PdfPig.Content;
 
 namespace pipeline_orchestrator.Engines
 {
+
     public class ExtractionTopic
     {
         public ExtractionTopic(string Experience, string Summary, string Skills, string Projects) 
@@ -19,7 +23,6 @@ namespace pipeline_orchestrator.Engines
         public string? Summary { get; set; }
         public string? Skills { get; set; }
         public string? Projects { get; set; }
-
     }
     // I will learn more about this to make it work for general cases, but for now I am focusing on LLM part
     public class Screening
@@ -157,6 +160,43 @@ namespace pipeline_orchestrator.Engines
 
             return sb.ToString();
         }
+        // we need to use GitHub's GraphQL API to see add metits to the user,
+        // this pipeline will go first, and then we will compute cosine similarity 
+        // in the embeddings so one microservice URL can work effectly, also GitHub can tell a lot. 
+        // but we cannot soly decide based on github we need to toggle options to screen github.
 
+        public List<string> ExtractPdfLinks(IFormFile pdfFile)
+        {
+            var Links = new List<string>();
+            using (var stream = pdfFile.OpenReadStream())
+            using (var pdf = PdfDocument.Open(stream))
+            {
+                foreach (var page in pdf.GetPages())
+                {
+                    foreach (var annotation in page.ExperimentalAccess.GetAnnotations())
+                    {
+                        if (annotation.Type == AnnotationType.Link)
+                        {
+                            if (annotation.Action is UriAction uriAction)
+                            {
+                                var uri = uriAction.Uri.ToString();
+
+                                if (!string.IsNullOrWhiteSpace(uri))
+                                {
+                                    Links.Add(uri);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return Links;
+        }
+        // extracts github links, so that we can use GitHub API's, Remember there is a ratelimiter there.
+        public List<string> ExtractGitHubLinks(List<string> links)
+        {
+            var githubLinks = links.Where(url => url.Contains("github.com")).ToList();
+            return githubLinks;
+        }
     }
 }

@@ -60,6 +60,11 @@ public class StreamController : ControllerBase
 
         string postingText = _localScreening.LoadChunkForLLM(posting);
         ExtractionTopic metaDataFromPdf = _localScreening.MetaData(pdfFile);
+
+
+        var extractLinks = _localScreening.ExtractPdfLinks(pdfFile);
+        var githubLinks = _localScreening.ExtractGitHubLinks(extractLinks);
+
         Talent newTalent = new Talent()
         {
             Name = "Dummy Name <we will get using this interface>",
@@ -82,18 +87,19 @@ public class StreamController : ControllerBase
 
         if (response.IsSuccessStatusCode)
         {
-            var responseObject = await response.Content.ReadFromJsonAsync<CosineOut>();
+            CosineOut? responseObject = await response.Content.ReadFromJsonAsync<CosineOut>();
             if (responseObject.cosineOut >= posting.cosineSimilarity)
             {
-                return new JsonResult(responseObject);
+                return new JsonResult(githubLinks);
             }
 
             return NotFound(new
             {
                 message = "No match found"
             });
-
         }
+
+
         return new JsonResult(BadRequest());
     }
 
