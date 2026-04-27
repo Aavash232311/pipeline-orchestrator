@@ -26,7 +26,13 @@ builder.Services.AddHttpClient("PythonPipeline", client =>
 builder.Services.AddRateLimiter(options =>
 {
     // what happens if we have too many requests.
-    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.OnRejected = async (context, token) =>
+    {
+        // we send that in HTTP header.
+        context.HttpContext.Response.ContentType = "text/plain";
+        context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+        await context.HttpContext.Response.WriteAsync("Toooo many request. Please try again.", cancellationToken: token);
+    };
 
     options.AddFixedWindowLimiter(policyName: "RateLimitorController", opt =>
     {
@@ -36,6 +42,7 @@ builder.Services.AddRateLimiter(options =>
         opt.QueueLimit = 2; // two request to wait in line before rejecting.
     });
 });
+
 
 
 builder.AddServiceDefaults();
@@ -62,7 +69,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseRouting();
+
+app.UseRateLimiter();
+
+app.UseAuthorization(); 
 
 app.MapControllers();
 
