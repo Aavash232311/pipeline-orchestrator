@@ -1,7 +1,9 @@
 ﻿using pipeline_orchestrator.Data;
 using Microsoft.EntityFrameworkCore;
-using pipeline_orchestrator.Services;
 using pipeline_orchestrator.Engines;
+using System.Threading.RateLimiting;
+using pipeline_orchestrator.Services;
+using Microsoft.AspNetCore.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 string connectionStringName = "DefaultConnection";
@@ -18,6 +20,23 @@ builder.Services.AddHttpClient("PythonPipeline", client =>
         builder.Configuration["PIPELINE_URL"] ?? "http://localhost:8000"
     );
 });
+
+
+// rate limitor, without it we can pace something like a DDOS attack.
+builder.Services.AddRateLimiter(options =>
+{
+    // what happens if we have too many requests.
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    options.AddFixedWindowLimiter(policyName: "RateLimitorController", opt =>
+    {
+        opt.PermitLimit = 10;
+        opt.Window = TimeSpan.FromMinutes(1);
+        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        opt.QueueLimit = 2; // two request to wait in line before rejecting.
+    });
+});
+
 
 builder.AddServiceDefaults();
 

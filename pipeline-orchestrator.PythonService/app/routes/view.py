@@ -1,12 +1,9 @@
 import torch
-from app.database import get_pool
-from pydantic import BaseModel
 from fastapi import APIRouter
-from uuid import UUID
-from typing import Any
-from fastapi import FastAPI, HTTPException
-from app.Machine_Learning.embedding_lm import CosineSimilarity
+from pydantic import BaseModel
+from app.database import get_pool
 from app.Machine_Learning.embedding_lm import EmbeddingLLM
+from app.Machine_Learning.embedding_lm import CosineSimilarity
 
 class Skill(BaseModel):
     name: str
@@ -33,11 +30,7 @@ async def get_skills():
 class FeatureRequest(BaseModel):
     candidate: str
     posting: str
-
-
-''' Side note: my other github repo has explanation about embeddings in depth.'''
-
-# Loaded once the microservice starts, but trade off again 
+    
 embedding_model = EmbeddingLLM('BAAI/bge-small-en-v1.5')
 
 
@@ -46,13 +39,7 @@ async def upload_resume_skills(data: FeatureRequest):
     candidate_token = embedding_model.tokenize(data.candidate).tolist()
     posting_token = embedding_model.tokenize(data.posting).tolist()
 
-    # let's fetch the posting for this job from the database and fine the cosine similarity
-    '''
-    Before using a vector database to store embeddings, let's first check the cosine similarity match
-    between the two chunks of text. Let's prepare that in c# backend
-      
-     '''
-    
+
     cosine_similarity = CosineSimilarity()
     similarity_score = cosine_similarity.compute_similarity(torch.tensor(candidate_token), torch.tensor(posting_token))
 
