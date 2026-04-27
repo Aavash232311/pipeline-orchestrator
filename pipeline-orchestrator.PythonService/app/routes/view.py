@@ -44,5 +44,5 @@ async def upload_resume_skills(data: FeatureRequest):
     similarity_score = cosine_similarity.compute_similarity(torch.tensor(candidate_token), torch.tensor(posting_token))
 
     return {
-        'similarity_score': similarity_score
+        'cosineOut': similarity_score
     }

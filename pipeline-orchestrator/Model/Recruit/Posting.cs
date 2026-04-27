@@ -33,6 +33,8 @@ namespace pipeline_orchestrator.Model.Recruit
         /* Just like me getting rejected, recruiter might need to know for how long candiate has been in college */
         public int? YearInCollege { get; set; } = 0;
         public bool? HasGraduated { get; set; } = false;
+        [Column("cosine")]
+        public decimal cosineSimilarity { get; set; } = 5.00m;
 
     }
 
