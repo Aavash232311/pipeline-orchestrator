@@ -28,5 +28,12 @@
         public record ContributionsCollection(ContributionCalendar ContributionCalendar);
         public record ContributionCalendar(int TotalContributions);
     }
+
+    // Merit DTO
+
+    public class GraphQLApiScore
+    {
+        public int? CollobratorScore { get; set; } = 0;
+    }
    
 }

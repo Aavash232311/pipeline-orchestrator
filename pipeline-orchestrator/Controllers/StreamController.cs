@@ -63,6 +63,11 @@ public class StreamController : ControllerBase
 
         var retriveDataFromVSPipeline = _rest.ExtractGitHubInfo(pdfFile);
 
+        // Assume we are using this pipline for analysing data from vc
+        //var collobratorScore = await _rest.RepositoryInfo("Aavash232311", "transformer-pt-analysis");
+
+
+
         Talent newTalent = new Talent()
         {
             Name = "Dummy Name <we will get using this interface>",
@@ -74,8 +79,8 @@ public class StreamController : ControllerBase
 
         };
 
-        //_context.Add(newTalent);
-        //await _context.SaveChangesAsync();
+        _context.Add(newTalent);
+        await _context.SaveChangesAsync();
         // let's retrieve the experience first 
         var response = await _microservice.PostAsJsonAsync("/feature_embeddings", new
         {
@@ -88,9 +93,7 @@ public class StreamController : ControllerBase
             CosineOut? responseObject = await response.Content.ReadFromJsonAsync<CosineOut>();
             if (responseObject.cosineOut >= posting.cosineSimilarity)
             {
-                return Ok(
-                    new { val = _rest.RepositoryInfo("Aavash232311", "transformer-pt-analysis") }
-                );
+                return Ok();
             }
 
             return NotFound(new
@@ -98,8 +101,6 @@ public class StreamController : ControllerBase
                 message = "No match found"
             });
         }
-
-
         return new JsonResult(BadRequest());
     }
 

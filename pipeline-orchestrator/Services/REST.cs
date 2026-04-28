@@ -38,28 +38,37 @@ namespace pipeline_orchestrator.Services
 
             var payload = new { query = queryObject };
 
-            var response = await _httpClient.PostAsync("https://api.github.com/graphql", new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json"));
-            var content = await response.Content.ReadAsStringAsync();
-
-            ContributionResults? outer = JsonSerializer.Deserialize<ContributionResults>(content, new JsonSerializerOptions
+            try
             {
-                PropertyNameCaseInsensitive = true
-            });
+                var response = await _httpClient.PostAsync("https://api.github.com/graphql", new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json"));
+                var content = await response.Content.ReadAsStringAsync();
 
-            if (outer != null)
+                ContributionResults? outer = JsonSerializer.Deserialize<ContributionResults>(content, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                if (outer != null)
+                {
+                    return outer.data.User.ContributionsCollection.ContributionCalendar.TotalContributions;
+                }
+                throw new Exception("The API endpoint RepositoryInfo is not functional. ");
+            } catch(Exception e)
             {
-                return outer.data.User.ContributionsCollection.ContributionCalendar.TotalContributions;
+                return -1; // Here if the value is negative we won't simply count those values. We don't want some random text input to break the backend.
             }
-            throw new Exception("The API endpoint RepositoryInfo is not functional. ");
         }
 
         public async Task<int> ExtractGitHubInfo(IFormFile pdfFile)
         {
 
             var extractLinks = _localScreening.ExtractPdfLinks(pdfFile);
-            var githubLinks = _localScreening.ExtractGitHubLinks(extractLinks);
+            List<string> githubLinks = _localScreening.ExtractGitHubLinks(extractLinks);
 
-
+            foreach (var  i in githubLinks)
+            {
+                Console.WriteLine(i);
+            }
             return 0;
 
         }
