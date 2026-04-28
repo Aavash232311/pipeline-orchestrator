@@ -61,9 +61,7 @@ public class StreamController : ControllerBase
         string postingText = _localScreening.LoadChunkForLLM(posting);
         ExtractionTopic metaDataFromPdf = _localScreening.MetaData(pdfFile);
 
-
-        var extractLinks = _localScreening.ExtractPdfLinks(pdfFile);
-        var githubLinks = _localScreening.ExtractGitHubLinks(extractLinks);
+        var retriveDataFromVSPipeline = _rest.ExtractGitHubInfo(pdfFile);
 
         Talent newTalent = new Talent()
         {
@@ -90,7 +88,9 @@ public class StreamController : ControllerBase
             CosineOut? responseObject = await response.Content.ReadFromJsonAsync<CosineOut>();
             if (responseObject.cosineOut >= posting.cosineSimilarity)
             {
-                return new JsonResult(githubLinks);
+                return Ok(
+                    new { val = _rest.RepositoryInfo("Aavash232311", "transformer-pt-analysis") }
+                );
             }
 
             return NotFound(new

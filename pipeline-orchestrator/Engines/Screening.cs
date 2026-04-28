@@ -1,11 +1,10 @@
-﻿using OpenTelemetry.Trace;
-using pipeline_orchestrator.Model.Recruit;
-using System.Text;
+﻿using pipeline_orchestrator.Model.Recruit;
 using System.Text.RegularExpressions;
-using UglyToad.PdfPig;
-using UglyToad.PdfPig.Actions;
 using UglyToad.PdfPig.Annotations;
+using UglyToad.PdfPig.Actions;
 using UglyToad.PdfPig.Content;
+using UglyToad.PdfPig;
+using System.Text;
 
 namespace pipeline_orchestrator.Engines
 {
@@ -160,7 +159,7 @@ namespace pipeline_orchestrator.Engines
 
             return sb.ToString();
         }
-        // we need to use GitHub's GraphQL API to see add metits to the user,
+        // we need to use GitHub's Graph REST API to see add metits to the user,
         // this pipeline will go first, and then we will compute cosine similarity 
         // in the embeddings so one microservice URL can work effectly, also GitHub can tell a lot. 
         // but we cannot soly decide based on github we need to toggle options to screen github.

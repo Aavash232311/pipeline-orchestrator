@@ -6,6 +6,7 @@ using pipeline_orchestrator.Services;
 using Microsoft.AspNetCore.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
+
 string connectionStringName = "DefaultConnection";
 var connectionString = builder.Configuration.GetConnectionString(connectionStringName);
 
@@ -44,11 +45,10 @@ builder.Services.AddRateLimiter(options =>
 });
 
 
-
 builder.AddServiceDefaults();
 
 /* Dependency Injections 💉 */
-builder.Services.AddSingleton<Microservice>();
+
 builder.Services.AddHttpClient<REST>();
 builder.Services.AddSingleton<Screening>();
 // Add services to the container.

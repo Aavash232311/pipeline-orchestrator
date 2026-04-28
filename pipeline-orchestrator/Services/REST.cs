@@ -1,29 +1,67 @@
-﻿using System.Net.Http;
-using System.Net.Http.Headers;
+﻿using pipeline_orchestrator.Model.DTOs;
+using pipeline_orchestrator.Engines;
+using System.Text.Json;
+using System.Text;
 
 namespace pipeline_orchestrator.Services
 {
     public class REST
     {
         private readonly IConfiguration _configuration;
+        private readonly Screening _localScreening;
         private readonly HttpClient _httpClient;    
-        public REST(IConfiguration config, HttpClient http_client)
+        public REST(IConfiguration config, HttpClient http_client, Screening localScreening)
         {
             _configuration = config;
             _httpClient = http_client;
+            _localScreening = localScreening;
         }
 
-        public async Task<string> RepositoryInfo(string owner, string repo)
+        public async Task<int> RepositoryInfo(string owner, string repo)
         {
-            string url = $"https://api.github.com/repos/Aavash232311/AspNet-SignalR-Full-Stack-Project";
-            _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Aavash232311");
+            var token = Environment.GetEnvironmentVariable("GITHUB_PAT");
 
-            using HttpResponseMessage response = await _httpClient.GetAsync(url);
-            response.EnsureSuccessStatusCode();
+            var fromDate = DateTime.UtcNow.AddYears(-1).ToString("yyyy-MM-ddTHH:mm:ssZ");
+            var toDate = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
 
-            var jsonResponse = await response.Content.ReadAsStringAsync();
+            _httpClient.DefaultRequestHeaders.Add("User-Agent", "pipeline-orchestrator");
+            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+            _httpClient.DefaultRequestHeaders.Add("Accept", "application/vnd.github+json");
 
-            return await response.Content.ReadAsStringAsync();
+            var queryObject = $@"query {{ 
+                         user(login: ""{owner}"") {{ 
+                         contributionsCollection(from: ""{fromDate}"", to: ""{toDate}"") {{ 
+                         contributionCalendar {{ totalContributions }} 
+                       }} 
+                  }} 
+              }}";
+
+            var payload = new { query = queryObject };
+
+            var response = await _httpClient.PostAsync("https://api.github.com/graphql", new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json"));
+            var content = await response.Content.ReadAsStringAsync();
+
+            ContributionResults? outer = JsonSerializer.Deserialize<ContributionResults>(content, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            if (outer != null)
+            {
+                return outer.data.User.ContributionsCollection.ContributionCalendar.TotalContributions;
+            }
+            throw new Exception("The API endpoint RepositoryInfo is not functional. ");
+        }
+
+        public async Task<int> ExtractGitHubInfo(IFormFile pdfFile)
+        {
+
+            var extractLinks = _localScreening.ExtractPdfLinks(pdfFile);
+            var githubLinks = _localScreening.ExtractGitHubLinks(extractLinks);
+
+
+            return 0;
+
         }
     }
 }
