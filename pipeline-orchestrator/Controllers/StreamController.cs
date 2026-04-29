@@ -61,47 +61,48 @@ public class StreamController : ControllerBase
         string postingText = _localScreening.LoadChunkForLLM(posting);
         ExtractionTopic metaDataFromPdf = _localScreening.MetaData(pdfFile);
 
-        var retriveDataFromVSPipeline = _rest.ExtractGitHubInfo(pdfFile);
+        List<List<string>> retriveDataFromVSPipeline = _rest.ExtractGitHubInfo(pdfFile);
+
 
         // Assume we are using this pipline for analysing data from vc
         //var collobratorScore = await _rest.RepositoryInfo("Aavash232311", "transformer-pt-analysis");
 
 
 
-        Talent newTalent = new Talent()
-        {
-            Name = "Dummy Name <we will get using this interface>",
-            Email = "Email <we will get using this interface>",
-            Experience = metaDataFromPdf.Experience,
-            Projects = metaDataFromPdf.Projects,
-            ProfessionalSummary = metaDataFromPdf.Summary,
-            TechnicalSkills = metaDataFromPdf.Skills,
+        //Talent newTalent = new Talent()
+        //{
+        //    Name = "Dummy Name <we will get using this interface>",
+        //    Email = "Email <we will get using this interface>",
+        //    Experience = metaDataFromPdf.Experience,
+        //    Projects = metaDataFromPdf.Projects,
+        //    ProfessionalSummary = metaDataFromPdf.Summary,
+        //    TechnicalSkills = metaDataFromPdf.Skills,
 
-        };
+        //};
 
-        _context.Add(newTalent);
-        await _context.SaveChangesAsync();
-        // let's retrieve the experience first 
-        var response = await _microservice.PostAsJsonAsync("/feature_embeddings", new
-        {
-            Candidate = _localScreening.ExtractTextFromPdf(pdfFile),
-            Posting = postingText
-        });
+        //_context.Add(newTalent);
+        //await _context.SaveChangesAsync();
+        //// let's retrieve the experience first 
+        //var response = await _microservice.PostAsJsonAsync("/feature_embeddings", new
+        //{
+        //    Candidate = _localScreening.ExtractTextFromPdf(pdfFile),
+        //    Posting = postingText
+        //});
 
-        if (response.IsSuccessStatusCode)
-        {
-            CosineOut? responseObject = await response.Content.ReadFromJsonAsync<CosineOut>();
-            if (responseObject.cosineOut >= posting.cosineSimilarity)
-            {
-                return Ok();
-            }
+        //if (response.IsSuccessStatusCode)
+        //{
+        //    CosineOut? responseObject = await response.Content.ReadFromJsonAsync<CosineOut>();
+        //    if (responseObject.cosineOut >= posting.cosineSimilarity)
+        //    {
+        //        return Ok();
+        //    }
 
-            return NotFound(new
-            {
-                message = "No match found"
-            });
-        }
-        return new JsonResult(BadRequest());
+        //    return NotFound(new
+        //    {
+        //        message = "No match found"
+        //    });
+        //}
+        return new JsonResult(Ok());
     }
 
 }

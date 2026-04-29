@@ -1,7 +1,8 @@
-﻿using pipeline_orchestrator.Model.DTOs;
-using pipeline_orchestrator.Engines;
-using System.Text.Json;
+﻿using pipeline_orchestrator.Engines;
+using pipeline_orchestrator.Model.DTOs;
 using System.Text;
+using System.Text.Json;
+using static Grpc.Core.Metadata;
 
 namespace pipeline_orchestrator.Services
 {
@@ -10,6 +11,7 @@ namespace pipeline_orchestrator.Services
         private readonly IConfiguration _configuration;
         private readonly Screening _localScreening;
         private readonly HttpClient _httpClient;    
+       
         public REST(IConfiguration config, HttpClient http_client, Screening localScreening)
         {
             _configuration = config;
@@ -59,18 +61,49 @@ namespace pipeline_orchestrator.Services
             }
         }
 
-        public async Task<int> ExtractGitHubInfo(IFormFile pdfFile)
-        {
-
+        // In this method we are "trying" to extract github username, and repo name. 
+       // Trying because real world is messay, and to deal with that mesh we need to think through.
+        private List<List<string>> ExtractGitHubInfo(IFormFile pdfFile)
+        { 
             var extractLinks = _localScreening.ExtractPdfLinks(pdfFile);
             List<string> githubLinks = _localScreening.ExtractGitHubLinks(extractLinks);
 
-            foreach (var  i in githubLinks)
-            {
-                Console.WriteLine(i);
-            }
-            return 0;
+            // we want the link containing github.
+            List<List<string>> ll = new List<List<string>>();
 
+            foreach (string link in githubLinks)
+            {
+                Uri uri = new Uri(link);
+
+                string hostName = uri.Host.ToLower();
+
+                if (hostName is "github.com")
+                {
+                    string absPath = uri.AbsolutePath;
+
+                    // So listen to my logic, if the hostName is github.com and two arguement is there then one is username other one is repo name in a resume.
+                    // We do need to test these in lot of edge cases as well. 
+                    // if this part extracts something gross, then GraphQL API method -1 which wont be counted.
+                    // But we need to prevent grosh thing from going to thid party API because they have rate limiting as well.
+
+                    string[] splittedRepos = absPath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+
+
+                    if (splittedRepos.Length > 1) // meaning if it's a github url with username and repo
+                    {
+                        ll.Add(new List<string>() { splittedRepos[0], splittedRepos[1] });
+                    }
+                }
+            }
+            return ll;
+        }
+
+        public int RetrivePipeline(IFormFile pdfFile)
+        {
+            List<List<string>> githubRepoUsernamePasss = ExtractGitHubInfo(pdfFile);
+
+            return 0;
         }
     }
 }
