@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using pipeline_orchestrator.Data;
-using pipeline_orchestrator.Model;
 using pipeline_orchestrator.Engines;
 using Microsoft.EntityFrameworkCore;
 using pipeline_orchestrator.Services;
@@ -61,11 +60,11 @@ public class StreamController : ControllerBase
         string postingText = _localScreening.LoadChunkForLLM(posting);
         ExtractionTopic metaDataFromPdf = _localScreening.MetaData(pdfFile);
 
-        List<List<string>> retriveDataFromVSPipeline = _rest.ExtractGitHubInfo(pdfFile);
+        var retriveDataFromVSPipeline = _rest.RetrivePipeline(pdfFile);
 
 
         // Assume we are using this pipline for analysing data from vc
-        //var collobratorScore = await _rest.RepositoryInfo("Aavash232311", "transformer-pt-analysis");
+        //var collobratorScore = await _rest.ContributionInfo("Aavash232311", "transformer-pt-analysis");
 
 
 

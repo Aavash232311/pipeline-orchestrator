@@ -2,7 +2,6 @@
 using pipeline_orchestrator.Model.DTOs;
 using System.Text;
 using System.Text.Json;
-using static Grpc.Core.Metadata;
 
 namespace pipeline_orchestrator.Services
 {
@@ -17,19 +16,19 @@ namespace pipeline_orchestrator.Services
             _configuration = config;
             _httpClient = http_client;
             _localScreening = localScreening;
-        }
 
-        public async Task<int> RepositoryInfo(string owner, string repo)
-        {
             var token = Environment.GetEnvironmentVariable("GITHUB_PAT");
-
-            var fromDate = DateTime.UtcNow.AddYears(-1).ToString("yyyy-MM-ddTHH:mm:ssZ");
-            var toDate = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
 
             _httpClient.DefaultRequestHeaders.Add("User-Agent", "pipeline-orchestrator");
             _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
             _httpClient.DefaultRequestHeaders.Add("Accept", "application/vnd.github+json");
+        }
 
+        public async Task<int> RepositoryInfo(string owner, string repo)
+        {
+
+            var fromDate = DateTime.UtcNow.AddYears(-1).ToString("yyyy-MM-ddTHH:mm:ssZ");
+            var toDate = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
             var queryObject = $@"query {{ 
                          user(login: ""{owner}"") {{ 
                          contributionsCollection(from: ""{fromDate}"", to: ""{toDate}"") {{ 
@@ -101,8 +100,12 @@ namespace pipeline_orchestrator.Services
 
         public int RetrivePipeline(IFormFile pdfFile)
         {
+            
             List<List<string>> githubRepoUsernamePasss = ExtractGitHubInfo(pdfFile);
-
+            foreach (var arr in githubRepoUsernamePasss)
+            {
+                Console.WriteLine($"username {arr[0]} repo{arr[1]}");
+            }
             return 0;
         }
     }
