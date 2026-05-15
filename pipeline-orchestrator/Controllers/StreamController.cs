@@ -101,7 +101,7 @@ public class StreamController : ControllerBase
         //        message = "No match found"
         //    });
         //}
-        return new JsonResult(Ok());
+        return new JsonResult(Ok(retriveDataFromVSPipeline));
     }
 
 }

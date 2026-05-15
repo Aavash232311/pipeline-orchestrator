@@ -24,7 +24,7 @@ namespace pipeline_orchestrator.Services
             _httpClient.DefaultRequestHeaders.Add("Accept", "application/vnd.github+json");
         }
 
-        public async Task<int> RepositoryInfo(string owner, string repo)
+        public async Task<int> ContributionInfo(string owner, string repo)
         {
 
             var fromDate = DateTime.UtcNow.AddYears(-1).ToString("yyyy-MM-ddTHH:mm:ssZ");
@@ -60,6 +60,15 @@ namespace pipeline_orchestrator.Services
             }
         }
 
+        // retive information about GitHub repo
+        public async Task<int> GitHubRepoInformation(List<List<string>> nameRepo)
+        {
+            // todo: send a HTTP request to graph SQL and extract relivent information
+            // goal is to learn about scaling, and everything possible even if this project is too broad.
+            // I can handle broad things.
+            return 1;
+        }
+
         // In this method we are "trying" to extract github username, and repo name. 
        // Trying because real world is messay, and to deal with that mesh we need to think through.
         private List<List<string>> ExtractGitHubInfo(IFormFile pdfFile)
@@ -88,7 +97,6 @@ namespace pipeline_orchestrator.Services
                     string[] splittedRepos = absPath.Split('/', StringSplitOptions.RemoveEmptyEntries);
 
 
-
                     if (splittedRepos.Length > 1) // meaning if it's a github url with username and repo
                     {
                         ll.Add(new List<string>() { splittedRepos[0], splittedRepos[1] });
@@ -98,15 +106,15 @@ namespace pipeline_orchestrator.Services
             return ll;
         }
 
-        public int RetrivePipeline(IFormFile pdfFile)
+
+
+        public List<List<string>> RetrivePipeline(IFormFile pdfFile)
         {
             
             List<List<string>> githubRepoUsernamePasss = ExtractGitHubInfo(pdfFile);
-            foreach (var arr in githubRepoUsernamePasss)
-            {
-                Console.WriteLine($"username {arr[0]} repo{arr[1]}");
-            }
-            return 0;
+
+            var RepoInfo = GitHubRepoInformation(githubRepoUsernamePasss);
+            return githubRepoUsernamePasss;
         }
     }
 }
