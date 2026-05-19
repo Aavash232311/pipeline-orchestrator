@@ -18,7 +18,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddHttpClient("PythonPipeline", client =>
 {
     client.BaseAddress = new Uri(
-        builder.Configuration["PIPELINE_URL"] ?? "http://localhost:8000"
+        builder.Configuration["PIPELINE_URL"] ?? "http://localhost:8000" // the second one is a fall back URL
     );
 });
 
